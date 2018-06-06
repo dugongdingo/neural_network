@@ -1,0 +1,105 @@
+# sent_id = fr-ud-test_00001
+# text = Je sens qu'entre ça et les films de médecins et scientifiques fous que nous avons déjà vus, nous pourrions emprunter un autre chemin pour l'origine.
+1	Je	il	PRON	_	Number=Sing|Person=1|PronType=Prs	2	nsubj	_	_
+2	sens	sentir	VERB	_	Mood=Ind|Number=Sing|Person=1|Tense=Pres|VerbForm=Fin	0	root	_	_
+3	qu'	que	SCONJ	_	_	21	mark	_	SpaceAfter=No
+4	entre	entre	ADP	_	_	5	case	_	_
+5	ça	ça	PRON	_	Gender=Masc|Number=Sing|Person=3|PronType=Dem	21	obl	_	_
+6	et	et	CCONJ	_	_	8	cc	_	_
+7	les	le	DET	_	Definite=Def|Gender=Masc|Number=Plur|PronType=Art	8	det	_	_
+8	films	film	NOUN	_	Gender=Masc|Number=Plur	5	conj	_	_
+9	de	de	ADP	_	_	10	case	_	_
+10	médecins	médecin	NOUN	_	Gender=Masc|Number=Plur	8	nmod	_	_
+11	et	et	CCONJ	_	_	12	cc	_	_
+12	scientifiques	scientifique	NOUN	_	Gender=Masc|Number=Plur	10	conj	_	_
+13	fous	fou	ADJ	_	Gender=Masc|Number=Plur	12	amod	_	_
+14	que	que	PRON	_	PronType=Rel	18	obj	_	_
+15	nous	nous	PRON	_	Number=Plur|Person=1|PronType=Prs	18	nsubj	_	_
+16	avons	avoir	AUX	_	Mood=Ind|Number=Plur|Person=1|Tense=Pres|VerbForm=Fin	18	aux	_	_
+17	déjà	déjà	ADV	_	_	18	advmod	_	_
+18	vus	voir	VERB	_	Gender=Masc|Number=Plur|Tense=Past|VerbForm=Part	8	acl:relcl	_	SpaceAfter=No
+19	,	,	PUNCT	_	_	5	punct	_	_
+20	nous	nous	PRON	_	Number=Plur|Person=1|PronType=Prs	21	nsubj	_	_
+21	pourrions	pouvoir	VERB	_	Mood=Cnd|Number=Plur|Person=1|Tense=Pres|VerbForm=Fin	2	ccomp	_	_
+22	emprunter	emprunter	VERB	_	VerbForm=Inf	21	xcomp	_	_
+23	un	un	DET	_	Definite=Ind|Gender=Masc|Number=Sing|PronType=Art	25	det	_	_
+24	autre	autre	ADJ	_	Gender=Masc|Number=Sing	25	amod	_	_
+25	chemin	chemin	NOUN	_	Gender=Masc|Number=Sing	22	obj	_	_
+26	pour	pour	ADP	_	_	28	case	_	_
+27	l'	le	DET	_	Definite=Def|Gender=Fem|Number=Sing|PronType=Art	28	det	_	SpaceAfter=No
+28	origine	origine	NOUN	_	Gender=Fem|Number=Sing	22	obl	_	SpaceAfter=No
+29	.	.	PUNCT	_	_	2	punct	_	_
+
+# sent_id = fr-ud-test_00002
+# text = On pourra toujours parler à propos d'Averroès de "décentrement du Sujet".
+1	On	on	PRON	_	Gender=Masc|Number=Sing|Person=3	2	nsubj	_	_
+2	pourra	pouvoir	VERB	_	Mood=Ind|Number=Sing|Person=3|Tense=Fut|VerbForm=Fin	0	root	_	_
+3	toujours	toujours	ADV	_	_	2	advmod	_	_
+4	parler	parler	VERB	_	VerbForm=Inf	2	xcomp	_	_
+5	à	à	ADP	_	_	8	case	_	_
+6	propos	propos	NOUN	_	Gender=Masc|Number=Sing	5	fixed	_	_
+7	d'	de	ADP	_	_	5	fixed	_	SpaceAfter=No
+8	Averroès	Averroès	PROPN	_	_	4	obl	_	_
+9	de	de	ADP	_	_	11	case	_	_
+10	"	"	PUNCT	_	_	11	punct	_	SpaceAfter=No
+11	décentrement	décentrement	NOUN	_	Gender=Masc|Number=Sing	8	nmod	_	_
+12-13	du	_	_	_	_	_	_	_	_
+12	de	de	ADP	_	_	14	case	_	_
+13	le	le	DET	_	Definite=Def|Gender=Masc|Number=Sing|PronType=Art	14	det	_	_
+14	Sujet	sujet	NOUN	_	Gender=Masc|Number=Sing	11	nmod	_	SpaceAfter=No
+15	"	"	PUNCT	_	_	11	punct	_	SpaceAfter=No
+16	.	.	PUNCT	_	_	2	punct	_	_
+
+
+
+# sent_id = fr-ud-test_00006
+# text = Les spéculations autour du match sont à leur paroxysme.
+1	Les	le	DET	_	Definite=Def|Gender=Fem|Number=Plur|PronType=Art	2	det	_	_
+2	spéculations	spéculation	NOUN	_	Gender=Fem|Number=Plur	10	nsubj	_	_
+3	autour	autour	ADP	_	_	6	case	_	_
+4-5	du	_	_	_	_	_	_	_	_
+4	de	de	ADP	_	_	3	fixed	_	_
+5	le	le	DET	_	Definite=Def|Gender=Masc|Number=Sing|PronType=Art	6	det	_	_
+6	match	match	NOUN	_	Gender=Masc|Number=Sing	2	nmod	_	_
+7	sont	être	AUX	_	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	10	cop	_	_
+8	à	à	ADP	_	_	10	case	_	_
+9	leur	son	DET	_	Gender=Masc|Number=Sing|Poss=Yes|PronType=Prs	10	det	_	_
+10	paroxysme	paroxysme	NOUN	_	Gender=Masc|Number=Sing	0	root	_	SpaceAfter=No
+11	.	.	PUNCT	_	_	10	punct	_	
+
+# sent_id = fr-ud-test_00007
+# text = Ils ne citent pas son nom, parce que depuis les institutions on n'attaque pas un membre de la famille royale, mais c'est à lui qu'ils s'en prennent.
+1	Ils	il	PRON	_	Gender=Masc|Number=Plur|Person=3|PronType=Prs	3	nsubj	_	_
+2	ne	ne	ADV	_	Polarity=Neg	3	advmod	_	_
+3	citent	citer	VERB	_	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	_
+4	pas	pas	ADV	_	Polarity=Neg	3	advmod	_	_
+5	son	son	DET	_	Gender=Masc|Number=Sing|Poss=Yes|PronType=Prs	6	det	_	_
+6	nom	nom	NOUN	_	Gender=Masc|Number=Sing	3	obj	_	SpaceAfter=No
+7	,	,	PUNCT	_	_	3	punct	_	_
+8	parce	parce	ADV	_	_	15	mark	_	_
+9	que	que	SCONJ	_	_	8	fixed	_	_
+10	depuis	depuis	ADP	_	_	12	case	_	_
+11	les	le	DET	_	Definite=Def|Gender=Fem|Number=Plur|PronType=Art	12	det	_	_
+12	institutions	institution	NOUN	_	Gender=Fem|Number=Plur	15	obl	_	_
+13	on	on	PRON	_	Gender=Masc|Number=Sing|Person=3	15	nsubj	_	_
+14	n'	ne	ADV	_	Polarity=Neg	15	advmod	_	SpaceAfter=No
+15	attaque	attaquer	VERB	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	3	advcl	_	_
+16	pas	pas	ADV	_	Polarity=Neg	15	advmod	_	_
+17	un	un	DET	_	Definite=Ind|Gender=Masc|Number=Sing|PronType=Art	18	det	_	_
+18	membre	membre	NOUN	_	Gender=Masc|Number=Sing	15	obj	_	_
+19	de	de	ADP	_	_	21	case	_	_
+20	la	le	DET	_	Definite=Def|Gender=Fem|Number=Sing|PronType=Art	21	det	_	_
+21	famille	famille	NOUN	_	Gender=Fem|Number=Sing	18	nmod	_	_
+22	royale	royal	ADJ	_	Gender=Fem|Number=Sing	21	amod	_	SpaceAfter=No
+23	,	,	PUNCT	_	_	3	punct	_	_
+24	mais	mais	CCONJ	_	_	26	cc	_	_
+25	c'	ce	PRON	_	Number=Sing|Person=3|PronType=Dem	26	nsubj	_	SpaceAfter=No
+26	est	être	VERB	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	3	conj	_	_
+27	à	à	ADP	_	_	28	case	_	_
+28	lui	lui	PRON	_	Number=Sing|Person=3|PronType=Prs	26	obl	_	_
+29	qu'	que	PRON	_	PronType=Rel	33	iobj	_	SpaceAfter=No
+30	ils	il	PRON	_	Gender=Masc|Number=Plur|Person=3|PronType=Prs	33	nsubj	_	_
+31	s'	se	PRON	_	Person=3|PronType=Prs	33	expl	_	SpaceAfter=No
+32	en	en	PRON	_	Person=3	33	expl	_	_
+33	prennent	prendre	VERB	_	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	28	acl:relcl	_	SpaceAfter=No
+34	.	.	PUNCT	_	_	3	punct	_	_
