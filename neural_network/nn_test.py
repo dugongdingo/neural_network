@@ -11,12 +11,14 @@ class Network() :
 	def __init__(self, layer_shapes, activations, learning_rate=1) :
 		assert len(activations) == (len(layer_shapes)-1)
 		self.from_dict = {}
-		layers = [Layer(shape) for shape in layer_shapes]
-		for from_layer, to_layer, func in zip(layers, layers[1:], activations) :
+		self.layers = [Layer(shape) for shape in layer_shapes]
+		self.synapses = []
+		for from_layer, to_layer, func in zip(self.layers, self.layers[1:], activations) :
 			synapse = Synapse(from_layer, to_layer, afuncs[func], self)
 			self.from_dict[from_layer] = synapse
-		self.output_layer = layers[-1]
-		self.input_layer = layers[0]
+			self.synapses.append(synapse)
+		self.output_layer = self.layers[-1]
+		self.input_layer = self.layers[0]
 		self.Y = None
 		self.learning_rate = learning_rate
 
@@ -34,11 +36,13 @@ class Network() :
 		return self.from_dict[search_from_layer]
 	
 	def update(self, X, Y) :
-		self.Y = Y
 		self.input_layer.current_val = X
-		start_syn = self.get_synapse_from(self.input_layer)
-		start_syn.update()
-
+		for syn in self.synapses :
+			syn.forward()
+		error = self.output_layer.output_error(Y)
+		for syn in reversed(self.synapses) :
+			error = syn.backward(error)
+		
 	def next_predict(self, layer) :
 		if hex(id(self.output_layer)) == hex(id(layer)) :
 			return self.output_layer.current_val
@@ -56,7 +60,7 @@ class Layer() :
 		self.current_val = None
 
 	def output_error(self, Y) :
-		return self.current_val - Y
+		return np.sum(self.current_val - Y, axis=0)
 
 	def synapse_error(self, delta_next, syn) :
 		return delta_next.dot(syn.T)
@@ -70,24 +74,27 @@ class Synapse() :
 		self.shape = from_layer.shape, to_layer.shape
 		self.syn = np.random.rand(self.from_layer.shape, self.to_layer.shape) / 10
 		self.bias = np.random.rand(self.to_layer.shape)
-
-	def update(self) :
+	
+	def forward(self) :
 		x = self.from_layer.current_val
 		#if (np.zeros(X.shape) == x).all() :
 		y_hat = self.activation.function(x.dot(self.syn) + self.bias.T)
 		self.to_layer.current_val = y_hat
-		e = self.network.get_error(self, self.to_layer)
+
+	def  backward(self, e) :
 		#if self.to_layer !=  self.network.output_layer : 
-		delta = e * self.activation.prime(y_hat) 
+		delta = e * self.activation.prime(self.to_layer.current_val) 
+		#print(self.shape, delta.shape, e.shape)
 		#else : delta = e
-		self.syn += x.T.dot(delta) * self.network.learning_rate	
-		self.bias += np.sum(delta, keepdims=True)[0] * self.network.learning_rate
+		update = self.from_layer.current_val.T.dot(delta) 
+		self.syn += update * self.network.learning_rate	
+		#self.bias += e * self.network.learning_rate
 		if np.isnan(self.syn).any() : exit(1)	
 		return delta
 
 	def predict(self) :
 		x = self.from_layer.current_val
-		y_hat = x.dot(self.syn) + self.bias.T
+		y_hat = x.dot(self.syn) # + self.bias.T
 		if self.to_layer != self.network.output_layer :
 			y_hat = self.activation.function(y_hat)
 		self.to_layer.current_val = y_hat
