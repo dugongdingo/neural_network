@@ -207,7 +207,7 @@ if __name__ == "__main__" :
 		onehot[vocab[x]] += 1.
 		return onehot
 	def to_onehot_y(y) :
-		if y not in vocab : y = "__OOV__"
+		if y not in clazz : y = "__OOV__"
 		onehot = np.zeros(len(clazz))
 		onehot[clazz[y]] = 1.
 		return onehot
@@ -242,7 +242,7 @@ if __name__ == "__main__" :
 		#test : show progress
 		if not epoch%1 : 
 			print("Epoch", epoch, end=" ")
-			pred_scores = []
+			nb_test_ex, score = 0, 0
 			for X_sent_test, Y_sent_test in yield_sentences(testfile, batch_size=10) :
 				X_test = to_sparse_matrix_x(X_sent_test)	
 				Y_test = to_gold(Y_sent_test)
@@ -250,13 +250,10 @@ if __name__ == "__main__" :
 				preds = nw.predict(X_test)
 				golds = Y_test
 				assert len(preds) == len(golds) and len(preds[0]) == len(golds[0])
-				score = 0
 				for p,g in zip(preds,golds) :
 					if np.argmax(p) == np.argmax(g): score += 1
-				score /= len(golds)
-				#print(score)
-				pred_scores.append(score)
-			print(sum(pred_scores)/len(pred_scores))
+					nb_test_ex += 1
+			print(score/nb_test_ex)
 			print()
 	print("training done!")
 
