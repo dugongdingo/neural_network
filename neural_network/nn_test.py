@@ -5,6 +5,7 @@ import random as rd
 
 rd.seed(42) 
 
+
 class Network() :
 	def __init__(self, layer_shapes, activations, learning_rate=.02) :
 		assert len(activations) == (len(layer_shapes)-1)
@@ -53,7 +54,7 @@ class Layer() :
 		self.current_val = None
 
 	def output_error(self, Y) :
-		return Y - self.current_val
+		return softmax(self.current_val) - Y
 
 	def synapse_error(self, delta_next, syn) :
 		return delta_next.dot(syn.T)
@@ -66,8 +67,8 @@ class Synapse() :
 		self.activation = activation
 		self.network = network
 		self.shape = from_layer.shape, to_layer.shape
-		self.syn = (2 * np.random.random(self.shape) -1)
-		self.bias = (2 * np.random.random(self.to_layer.shape) -1)
+		self.syn = np.random.rand(self.from_layer.shape, self.to_layer.shape) / 10
+		self.bias = np.random.rand(self.to_layer.shape)
 
 	def update(self) :
 		x = self.from_layer.current_val
@@ -76,7 +77,7 @@ class Synapse() :
 		e = self.network.get_error(self, self.to_layer)
 		delta = e * self.activation.prime(y_hat) 
 		self.syn += x.T.dot(delta) * self.network.learning_rate	
-		self.bias += (np.sum(delta, keepdims=True) * self.network.learning_rate)[0]
+		self.bias += np.sum(delta, keepdims=True)[0] * self.network.learning_rate
 		if np.isnan(self.syn).any() : exit(1)	
 		return delta
 
@@ -91,9 +92,9 @@ class Synapse() :
 ActivationFunction = col.namedtuple("ActivationFunction", ["function", "prime"])
 
 def softmax(x) :
-	max_x = x - np.max(x) #with max, more stable
+	max_x = x - np.max(x, axis=1, keepdims=True) #with max, more stable
 	exp = np.exp(max_x)
-	return exp / np.sum(exp)
+	return exp / np.sum(exp, axis=1, keepdims=True)
 def softmax_prime(x) :
 	return softmax(x) * (1 - softmax(x))
 
@@ -225,7 +226,7 @@ if __name__ == "__main__" :
 	def to_gold(sentences) :
 		return np.array([to_onehot_y(c) for s in sentences for c in s])
 	
-	nw = Network([len(vocab), 60, len(clazz)], ["sigmoid", "softmax"])
+	nw = Network([len(vocab), len(clazz)], ["sigmoid"])
 	epochs = 10
 
 	print("network built!")
@@ -237,13 +238,14 @@ if __name__ == "__main__" :
 			X = to_sparse_matrix_x(X_sent)
 			Y = to_gold(Y_sent)
 			del X_sent, Y_sent
-			#X, Y = np.array(X), np.array(Y)
-			nw.update(X, Y)
+			X, Y = np.array(X), np.array(Y)
+			#for x, y in zip(X, Y) :
+			#	nw.update(x, y)
 		#test : show progress
 		if not epoch%1 : 
 			print("Epoch", epoch, end=" ")
 			nb_test_ex, score = 0, 0
-			for X_sent_test, Y_sent_test in yield_sentences(testfile, batch_size=10) :
+			for X_sent_test, Y_sent_test in yield_sentences(testfile, batch_size=100) :
 				X_test = to_sparse_matrix_x(X_sent_test)	
 				Y_test = to_gold(Y_sent_test)
 				assert len(X_test) == len(Y_test)
