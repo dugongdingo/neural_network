@@ -3,9 +3,10 @@ import numpy as np
 import scipy.sparse as sp
 import random as rd
 
+rd.seed(42) 
 
 class Network() :
-	def __init__(self, layer_shapes, activations) :
+	def __init__(self, layer_shapes, activations, learning_rate=.02) :
 		assert len(activations) == (len(layer_shapes)-1)
 		self.from_dict = {}
 		layers = [Layer(shape) for shape in layer_shapes]
@@ -15,6 +16,7 @@ class Network() :
 		self.output_layer = layers[-1]
 		self.input_layer = layers[0]
 		self.Y = None
+		self.learning_rate = learning_rate
 
 	def get_error(self, synapse, to_layer) :
 		if to_layer == self.output_layer :
@@ -35,8 +37,10 @@ class Network() :
 		self.get_synapse_from(self.input_layer).update()
 
 	def next_predict(self, layer) :
-		if self.output_layer == layer : return self.output_layer.current_val
-		else : return self.get_synapse_from(layer).predict()
+		if hex(id(self.output_layer)) == hex(id(layer)) :
+			return self.output_layer.current_val
+		else :
+			return self.get_synapse_from(layer).predict()
 
 	def predict(self, input_val) :
 		self.input_layer.current_val = input_val
@@ -63,14 +67,17 @@ class Synapse() :
 		self.network = network
 		self.shape = from_layer.shape, to_layer.shape
 		self.syn = (2 * np.random.random(self.shape) -1)
+		self.bias = (2 * np.random.random(self.to_layer.shape) -1)
 
 	def update(self) :
 		x = self.from_layer.current_val
-		y_hat = self.activation.function(x.dot(self.syn))
+		y_hat = self.activation.function(x.dot(self.syn) + self.bias.T)
 		self.to_layer.current_val = y_hat
 		e = self.network.get_error(self, self.to_layer)
-		delta = e * self.activation.prime(y_hat)
-		self.syn += x.T.dot(delta)		
+		delta = e * self.activation.prime(y_hat) 
+		self.syn += x.T.dot(delta) * self.network.learning_rate	
+		self.bias += (np.sum(delta, keepdims=True) * self.network.learning_rate)[0]
+		if np.isnan(self.syn).any() : exit(1)	
 		return delta
 
 	def predict(self) :
@@ -150,7 +157,7 @@ if __name__ == "__main__" :
 			yield X_sent, Y_sent
 
 	trainfile = "/home/espritsco/Downloads/fr-ud-train.conllu"
-	testfile = "/home/espritsco/Downloads/fr-ud-dev.conllu"
+	testfile = "/home/espritsco/Downloads/fr-ud-test.conllu"
 	
 	X_sent, Y_sent = read_sentences(trainfile)
 
@@ -168,7 +175,7 @@ if __name__ == "__main__" :
 	len_clazz = len(clazz)
 	del clazz_
 	del Y_sent
-	print("ressources built!")
+	print("resources built!")
 
 	def to_sparse_matrix_x(sentences) :
 		total_toks = sum(map(len, sentences))
@@ -222,27 +229,13 @@ if __name__ == "__main__" :
 	epochs = 10
 
 	print("network built!")
-	
-	
-	#train
-	pred_scores = []
-	for X_sent_test, Y_sent_test in yield_sentences(testfile, batch_size=10) :
-		X_test = to_sparse_matrix_x(X_sent_test)	
-		Y_test = to_gold(Y_sent_test)
-		assert len(X_test) == len(Y_test)
-		preds = nw.predict(X_test)
-		golds = Y_test
-		assert len(preds) == len(golds) and len(preds[0]) == len(golds[0])
-		score = sum(np.argmax(p) == np.argmax(g) for p, g in zip(preds, golds)) / len(golds)
-		pred_scores.append(score)
-	print(sum(pred_scores)/len(pred_scores))
 	for epoch in range(1, epochs+1) :
 		for X_sent, Y_sent in yield_sentences(trainfile, batch_size=100) :
+			xy = list(zip(X_sent, Y_sent))
+			rd.shuffle(xy)
+			X_sent[:], Y_sent[:] = zip(*xy)			
 			X = to_sparse_matrix_x(X_sent)
 			Y = to_gold(Y_sent)
-			#xy = list(zip(X, Y))
-			#rd.shuffle(xy)
-			#X[:], Y[:] = zip(*xy)
 			del X_sent, Y_sent
 			#X, Y = np.array(X), np.array(Y)
 			nw.update(X, Y)
@@ -257,7 +250,11 @@ if __name__ == "__main__" :
 				preds = nw.predict(X_test)
 				golds = Y_test
 				assert len(preds) == len(golds) and len(preds[0]) == len(golds[0])
-				score = sum(np.argmax(p) == np.argmax(g) for p, g in zip(preds, golds)) / len(golds)
+				score = 0
+				for p,g in zip(preds,golds) :
+					if np.argmax(p) == np.argmax(g): score += 1
+				score /= len(golds)
+				#print(score)
 				pred_scores.append(score)
 			print(sum(pred_scores)/len(pred_scores))
 			print()
