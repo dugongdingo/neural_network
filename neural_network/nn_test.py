@@ -1,13 +1,14 @@
 import collections as col
 import numpy as np
-import scipy.sparse as sp
+import pickle
 import random as rd
+import scipy.sparse as sp
 
 rd.seed(42) 
 
 
 class Network() :
-	def __init__(self, layer_shapes, activations, learning_rate=.02) :
+	def __init__(self, layer_shapes, activations, learning_rate=1) :
 		assert len(activations) == (len(layer_shapes)-1)
 		self.from_dict = {}
 		layers = [Layer(shape) for shape in layer_shapes]
@@ -35,7 +36,8 @@ class Network() :
 	def update(self, X, Y) :
 		self.Y = Y
 		self.input_layer.current_val = X
-		self.get_synapse_from(self.input_layer).update()
+		start_syn = self.get_synapse_from(self.input_layer)
+		start_syn.update()
 
 	def next_predict(self, layer) :
 		if hex(id(self.output_layer)) == hex(id(layer)) :
@@ -54,11 +56,10 @@ class Layer() :
 		self.current_val = None
 
 	def output_error(self, Y) :
-		return softmax(self.current_val) - Y
+		return self.current_val - Y
 
 	def synapse_error(self, delta_next, syn) :
 		return delta_next.dot(syn.T)
-
 
 class Synapse() :
 	def __init__(self, from_layer, to_layer, activation, network) :
@@ -72,10 +73,13 @@ class Synapse() :
 
 	def update(self) :
 		x = self.from_layer.current_val
+		#if (np.zeros(X.shape) == x).all() :
 		y_hat = self.activation.function(x.dot(self.syn) + self.bias.T)
 		self.to_layer.current_val = y_hat
 		e = self.network.get_error(self, self.to_layer)
+		#if self.to_layer !=  self.network.output_layer : 
 		delta = e * self.activation.prime(y_hat) 
+		#else : delta = e
 		self.syn += x.T.dot(delta) * self.network.learning_rate	
 		self.bias += np.sum(delta, keepdims=True)[0] * self.network.learning_rate
 		if np.isnan(self.syn).any() : exit(1)	
@@ -83,7 +87,9 @@ class Synapse() :
 
 	def predict(self) :
 		x = self.from_layer.current_val
-		y_hat = self.activation.function(x.dot(self.syn))
+		y_hat = x.dot(self.syn) + self.bias.T
+		if self.to_layer != self.network.output_layer :
+			y_hat = self.activation.function(y_hat)
 		self.to_layer.current_val = y_hat
 		pred = self.network.next_predict(self.to_layer)
 		return pred
@@ -91,8 +97,11 @@ class Synapse() :
 		
 ActivationFunction = col.namedtuple("ActivationFunction", ["function", "prime"])
 
+def softmax_cost(x, y) :
+	return softmax(x) - y
+
 def softmax(x) :
-	max_x = x - np.max(x, axis=1, keepdims=True) #with max, more stable
+	max_x = x - np.max(x, axis=1, keepdims=True) 
 	exp = np.exp(max_x)
 	return exp / np.sum(exp, axis=1, keepdims=True)
 def softmax_prime(x) :
@@ -108,6 +117,9 @@ afuncs = {
 	"softmax" : ActivationFunction(
 		softmax,
 		softmax_prime),
+	"none" : ActivationFunction(
+		lambda x:x,
+		lambda x:x)
 	}
 
 
@@ -226,7 +238,7 @@ if __name__ == "__main__" :
 	def to_gold(sentences) :
 		return np.array([to_onehot_y(c) for s in sentences for c in s])
 	
-	nw = Network([len(vocab), len(clazz)], ["sigmoid"])
+	nw = Network([len(vocab), 60, len(clazz)], ["sigmoid", "softmax"])
 	epochs = 10
 
 	print("network built!")
@@ -238,7 +250,8 @@ if __name__ == "__main__" :
 			X = to_sparse_matrix_x(X_sent)
 			Y = to_gold(Y_sent)
 			del X_sent, Y_sent
-			X, Y = np.array(X), np.array(Y)
+			#X, Y = np.array(X), np.array(Y)
+			nw.update(X, Y)
 			#for x, y in zip(X, Y) :
 			#	nw.update(x, y)
 		#test : show progress
